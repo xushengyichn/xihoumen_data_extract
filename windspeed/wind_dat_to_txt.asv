@@ -45,15 +45,15 @@ if showProgressBar
 end
 
 % for loop
-% for  k1 = 1
-for  k1 = 1:numIterations
+for  k1 = 1
+% for  k1 = 1:numIterations
     % Get the file name
     datFile = [dataPath fileList(k1).name];
 
     % Construct the output filename
     % remove extension
     [~,baseName,~] = fileparts(datFile);
-    % baseName='2013-01-19 21-UAN';
+    % baseName='2013-01-05 15-UAN';
     txtUA1File = [outputPath baseName '-UA1.txt'];
     txtUA2File = [outputPath baseName '-UA2.txt'];
     txtUA3File = [outputPath baseName '-UA3.txt'];
@@ -77,7 +77,6 @@ for  k1 = 1:numIterations
             disp(['Executing command for: ' txtUA1File]);
         end
         system(command1);
-        break
     else
         if showMessages
             % disp(['Skipping existing file: ' txtUA1File]);
@@ -90,7 +89,6 @@ for  k1 = 1:numIterations
             disp(['Executing command for: ' txtUA2File]);
         end
         system(command2);
-
     else
         if showMessages
             % disp(['Skipping existing file: ' txtUA2File]);
@@ -103,7 +101,6 @@ for  k1 = 1:numIterations
             disp(['Executing command for: ' txtUA3File]);
         end
         system(command3);
-
     else
         if showMessages
             % disp(['Skipping existing file: ' txtUA3File]);
@@ -116,7 +113,6 @@ for  k1 = 1:numIterations
             disp(['Executing command for: ' txtUA4File]);
         end
         system(command4);
-
     else
         if showMessages
             % disp(['Skipping existing file: ' txtUA4File]);
@@ -129,7 +125,6 @@ for  k1 = 1:numIterations
             disp(['Executing command for: ' txtUA5File]);
         end
         system(command5);
-
     else
         if showMessages
             % disp(['Skipping existing file: ' txtUA5File]);
@@ -142,27 +137,26 @@ for  k1 = 1:numIterations
             disp(['Executing command for: ' txtUA6File]);
         end
         system(command6);
-
     else
         if showMessages
             % disp(['Skipping existing file: ' txtUA6File]);
         end
     end
 
-%     % After running the commands for each file, check their sizes:
-% filesToCheck = {txtUA1File, txtUA2File, txtUA3File, txtUA4File, txtUA5File, txtUA6File};
-% for idx = 1:length(filesToCheck)
-%     currentFile = filesToCheck{idx};
-%     while true
-%         fileInfo = dir(currentFile);
-%         if ~isempty(fileInfo) && fileInfo.bytes == 5529600
-%             break; % Exit the while loop if the condition is met
-%         else
-%             pause(5); % Wait for 5 seconds before checking again
-%             disp('pause for 5 seconds')
-%         end
-%     end
-% end
+    % After running the commands for each file, check their sizes:
+filesToCheck = {txtUA1File, txtUA2File, txtUA3File, txtUA4File, txtUA5File, txtUA6File};
+for idx = 1:length(filesToCheck)
+    currentFile = filesToCheck{idx};
+    while true
+        fileInfo = dir(currentFile);
+        if ~isempty(fileInfo) && fileInfo.bytes == 5529600
+            break; % Exit the while loop if the condition is met
+        else
+            pause(5); % Wait for 5 seconds before checking again
+            disp('pause for 5 seconds')
+        end
+    end
+end
 
     if showProgressBar
         % USE THIS FUNCTION AND NOT THE STEP() METHOD OF THE OBJECT!!!

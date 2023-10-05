@@ -31,29 +31,33 @@ fileList = dir([dataPath '*-UAN.dat']);
 
 numIterations = length(fileList);
 
-if showProgressBar
-    if isempty(gcp('nocreate'))
-        parpool();
-    end
 
-    b = ProgressBar(numIterations, ...
-        'IsParallel', true, ...
-        'WorkerDirectory', pwd(), ...
-        'Title', 'Parallel 2' ...
-        );
-    b.setup([], [], []);
-end
+% Get the file list of dat files
+fileList_exist = dir([outputPath '*-UA1.txt']); % 仅列出其中一种txt文件来获取文件列表
+
+% 提取两个文件列表中的文件名
+names_all = {fileList.name};
+names_exist = {fileList_exist.name};
+
+% 删除后缀，只保留前面的部分
+names_all_base = cellfun(@(x) x(1:end-4), names_all, 'UniformOutput', false);
+names_exist_base = cellfun(@(x) x(1:17), names_exist, 'UniformOutput', false); % 从名字中提取前16个字符
+
+% 使用setdiff找出在names_all_base中但不在names_exist_base中的文件名前缀
+missing_files_base = setdiff(names_all_base, names_exist_base);
+
+
 
 % for loop
-% for  k1 = 1
-for  k1 = 1:numIterations
+for  k1 = 1
+% for  k1 = 1:numIterations
     % Get the file name
     datFile = [dataPath fileList(k1).name];
 
     % Construct the output filename
     % remove extension
-    [~,baseName,~] = fileparts(datFile);
-    % baseName='2013-01-19 21-UAN';
+    % [~,baseName,~] = fileparts(datFile);
+    baseName='2013-02-26 13-UAN';
     txtUA1File = [outputPath baseName '-UA1.txt'];
     txtUA2File = [outputPath baseName '-UA2.txt'];
     txtUA3File = [outputPath baseName '-UA3.txt'];
@@ -77,7 +81,7 @@ for  k1 = 1:numIterations
             disp(['Executing command for: ' txtUA1File]);
         end
         system(command1);
-        break
+
     else
         if showMessages
             % disp(['Skipping existing file: ' txtUA1File]);

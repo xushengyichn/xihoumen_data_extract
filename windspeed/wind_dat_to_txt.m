@@ -1,0 +1,146 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%Author: xushengyichn 54436848+xushengyichn@users.noreply.github.com
+%Date: 2023-10-04 22:13:37
+%LastEditors: ShengyiXu xushengyichn@outlook.com
+%LastEditTime: 2023-10-05 12:44:49
+%FilePath: \Exercises-for-Techniques-for-estimation-in-dynamics-systemsf:\git\xihoumen_data_extract\windspeed\wind_dat_to_txt.m
+%Description: 将dat文件转换为txt文件
+%
+%Copyright (c) 2023 by ${git_name_email}, All Rights Reserved. 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+clc;clear; close all
+addpath(genpath("C:\Users\shengyix\Documents\GitHub\Function_shengyi_package"))
+addpath(genpath("F:\git\Function_shengyi_package"))
+
+% 定义路径
+
+
+dataPath = 'G:\2013\allUAN\';
+exePath = 'F:\test\exe\';
+outputPath = 'F:\test\output\';
+
+% set if showing the message
+showMessages = false;
+
+% whether to show parfor progress bar
+showProgressBar = true;
+
+% Get the file list of dat files
+fileList = dir([dataPath '*-UAN.dat']);
+
+
+numIterations = length(fileList);
+
+if showProgressBar
+    if isempty(gcp('nocreate'))
+        parpool();
+    end
+
+    b = ProgressBar(numIterations, ...
+        'IsParallel', true, ...
+        'WorkerDirectory', pwd(), ...
+        'Title', 'Parallel 2' ...
+        );
+    b.setup([], [], []);
+end
+
+% for loop
+% for  k1 = 1
+parfor  k1 = 1:numIterations
+    % Get the file name
+    datFile = [dataPath fileList(k1).name];
+
+    % Construct the output filename
+    % remove extension
+    [~,baseName,~] = fileparts(datFile);
+    txtUA1File = [outputPath baseName '-UA1.txt'];
+    txtUA2File = [outputPath baseName '-UA2.txt'];
+    txtUA3File = [outputPath baseName '-UA3.txt'];
+    txtUA4File = [outputPath baseName '-UA4.txt'];
+    txtUA5File = [outputPath baseName '-UA5.txt'];
+    txtUA6File = [outputPath baseName '-UA6.txt'];
+
+    % Construct the command
+    command1 = [exePath 'uan2txtua1.exe "' datFile '" "' txtUA1File '"'];
+    command2 = [exePath 'uan2txtua2.exe "' datFile '" "' txtUA2File '"'];
+    command3 = [exePath 'uan2txtua3.exe "' datFile '" "' txtUA3File '"'];
+    command4 = [exePath 'uan2txtua4.exe "' datFile '" "' txtUA4File '"'];
+    command5 = [exePath 'uan2txtua5.exe "' datFile '" "' txtUA5File '"'];
+    command6 = [exePath 'uan2txtua6.exe "' datFile '" "' txtUA6File '"'];
+    
+    % Run the command
+    % 如果文件不存在则运行命令
+    if ~exist(txtUA1File, 'file')
+        if showMessages
+            disp(['Executing command for: ' txtUA1File]);
+        end
+        system(command1);
+    else
+        if showMessages
+            disp(['Skipping existing file: ' txtUA1File]);
+        end
+    end
+
+    if ~exist(txtUA2File, 'file')
+        if showMessages
+            disp(['Executing command for: ' txtUA2File]);
+        end
+        system(command2);
+    else
+        if showMessages
+            disp(['Skipping existing file: ' txtUA2File]);
+        end
+    end
+
+    if ~exist(txtUA3File, 'file')
+        if showMessages
+            disp(['Executing command for: ' txtUA3File]);
+        end
+        system(command3);
+    else
+        if showMessages
+            disp(['Skipping existing file: ' txtUA3File]);
+        end
+    end
+
+    if ~exist(txtUA4File, 'file')
+        if showMessages
+            disp(['Executing command for: ' txtUA4File]);
+        end
+        system(command4);
+    else
+        if showMessages
+            disp(['Skipping existing file: ' txtUA4File]);
+        end
+    end
+
+    if ~exist(txtUA5File, 'file')
+        if showMessages
+            disp(['Executing command for: ' txtUA5File]);
+        end
+        system(command5);
+    else
+        if showMessages
+            disp(['Skipping existing file: ' txtUA5File]);
+        end
+    end
+
+    if ~exist(txtUA6File, 'file')
+        if showMessages
+            disp(['Executing command for: ' txtUA6File]);
+        end
+        system(command6);
+    else
+        if showMessages
+            disp(['Skipping existing file: ' txtUA6File]);
+        end
+    end
+    
+    if showProgressBar
+        % USE THIS FUNCTION AND NOT THE STEP() METHOD OF THE OBJECT!!!
+        updateParallel([], pwd);
+    end
+end
+if showProgressBar
+    b.release();
+end

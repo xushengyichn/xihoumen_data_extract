@@ -19,25 +19,28 @@ exePath = 'C:\temp\exe\';
 outputPath = 'C:\temp\output\';
 
 % set if showing the message
-showMessages = false;
+showMessages = true;
+
+% whether to show parfor progress bar
+showProgressBar = false;
 
 % Get the file list of dat files
 fileList = dir([dataPath '*-VIB.dat']);
 
 
 numIterations = length(fileList);
-
-if isempty(gcp('nocreate'))
-    parpool();
+if showProgressBar
+    if isempty(gcp('nocreate'))
+        parpool();
+    end
+    
+    b = ProgressBar(numIterations, ...
+        'IsParallel', true, ...
+        'WorkerDirectory', pwd(), ...
+        'Title', 'Parallel 2' ...
+        );
+    b.setup([], [], []);
 end
-
-b = ProgressBar(numIterations, ...
-    'IsParallel', true, ...
-    'WorkerDirectory', pwd(), ...
-    'Title', 'Parallel 2' ...
-    );
-b.setup([], [], []);
-
 % for loop
 parfor  k1 = 1:numIterations
     % Get the file name
@@ -91,7 +94,11 @@ parfor  k1 = 1:numIterations
         end
     end
 
+    if showProgressBar
         % USE THIS FUNCTION AND NOT THE STEP() METHOD OF THE OBJECT!!!
-    updateParallel([], pwd);
+        updateParallel([], pwd);
+    end
 end
-b.release();
+if showProgressBar
+    b.release();
+end

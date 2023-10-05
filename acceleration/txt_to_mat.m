@@ -16,10 +16,10 @@ outputPath = 'C:\temp\output\';
 resultPath = 'C:\temp\result\';
 
 % set whether to show the message
-showMessages = false;
+showMessages = true;
 
 % whether to show parfor progress bar
-showProgressBar = true;
+showProgressBar = false;
 
 % Get the file list of dat files
 fileList = dir([outputPath '*-vibac2.txt']); % 仅列出其中一种txt文件来获取文件列表

@@ -12,8 +12,8 @@ clc;clear; close all
 addpath(genpath("C:\Users\shengyix\Documents\GitHub\Function_shengyi_package"))
 
 % 定义路径
-outputPath = 'C:\temp\output\';
-resultPath = 'C:\temp\result\';
+outputPath = 'G:\2013\allVIB\';
+resultPath = 'F:\test\result\';
 
 % set whether to show the message
 showMessages = true;
@@ -43,18 +43,18 @@ end
 
 
 % for loop
-% for k1 = 1:10
-parfor k1 = 1:numIterations
+% for k1 = 1
+for k1 = 1:numIterations
     baseName = fileList(k1).name(1:end-11); % 去掉 '-vibac2.txt' 后缀
-    % baseName = '2013-08-05 09-VIB'
+    % baseName = '2013-09-20 03'
     dateStr = baseName(1:10);
     timeStr = baseName(12:13);
     startTime = datetime(dateStr, 'InputFormat', 'yyyy-MM-dd') + hours(str2double(timeStr));
     startTime.Format = 'yyyy-MM-dd HH:mm:ss.SSS';
     % read the txt file
     dataAc2 = load([outputPath baseName '-vibac2.txt']);
-    dataAc3 = load([outputPath baseName '-vibac3.txt']);
-    dataAc4 = load([outputPath baseName '-vibac4.txt']);
+    dataAc3 = load([outputPath baseName '-VIBac3.txt']);
+    dataAc4 = load([outputPath baseName '-VIBac4.txt']);
 
 
     % Check if any of the loaded data files are empty
@@ -70,7 +70,7 @@ parfor k1 = 1:numIterations
     
         % Save the empty table
         matFileName = [resultPath baseName '.mat'];
-        parsave(matFileName, 'mergedData');
+        parsave(matFileName, mergedData);
         if showProgressBar
             updateParallel([], pwd);
         end
@@ -129,3 +129,4 @@ end
 function parsave(fname, mergedData)
   save(fname, 'mergedData')
 end
+

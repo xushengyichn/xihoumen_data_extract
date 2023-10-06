@@ -12,8 +12,8 @@ clc;clear; close all
 addpath(genpath("C:\Users\shengyix\Documents\GitHub\Function_shengyi_package"))
 
 % 定义路径
-outputPath = 'F:\test\output\';
-resultPath = 'F:\test\result\';
+outputPath = 'H:\xihoumen_data\wind\';
+resultPath = 'F:\test\result_wind\';
 
 % set whether to show the message
 showMessages = false;
@@ -22,7 +22,7 @@ showMessages = false;
 showProgressBar = false;
 
 % Get the file list of dat files
-fileList = dir([outputPath '*-UA1.txt']); % 仅列出其中一种txt文件来获取文件列表
+fileList = dir([outputPath '*-UANua1.txt']); % 仅列出其中一种txt文件来获取文件列表
 
 
 numIterations = length(fileList);
@@ -44,8 +44,8 @@ end
 
 % for loop
 % for k1 = 1
-for k1 = 1:numIterations
-    baseName = fileList(k1).name(1:end-8); % 去掉 '-vibac2.txt' 后缀
+parfor k1 = 1:numIterations
+    baseName = fileList(k1).name(1:end-5); % 去掉 '-vibac2.txt' 后缀
 
     matFileName = [resultPath baseName '.mat'];
     if exist(matFileName, 'file')
@@ -61,6 +61,9 @@ for k1 = 1:numIterations
         %         continue;
         %     end
         % end
+        if showMessages
+            disp(['Data files for ' baseName ' is exist. Pass.']);
+        end
         continue
     end
 
@@ -103,6 +106,11 @@ for k1 = 1:numIterations
 
     % calculate time stamps
     timeStamps = startTime + seconds(dataUA1(:,1));
+
+    % check if they have the same length
+    if length(dataUA1) ~= length(dataUA2) || length(dataUA1) ~= length(dataUA3) || length(dataUA1) ~= length(dataUA4) || length(dataUA1) ~= length(dataUA5) || length(dataUA1) ~= length(dataUA6)
+            error(['Data files for ' baseName ' have different lengths.']);
+    end
 
     % mergedData
     mergedData = table(timeStamps, dataUA1(:,2), dataUA1(:,3), dataUA1(:,4), dataUA2(:,2), dataUA2(:,3), dataUA2(:,4), dataUA3(:,2), dataUA3(:,3), dataUA3(:,4), dataUA4(:,2), dataUA4(:,3), dataUA4(:,4), dataUA5(:,2), dataUA5(:,3), dataUA5(:,4), dataUA6(:,2), dataUA6(:,3), dataUA6(:,4), ...

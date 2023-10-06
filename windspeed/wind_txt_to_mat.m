@@ -12,8 +12,8 @@ clc;clear; close all
 addpath(genpath("C:\Users\shengyix\Documents\GitHub\Function_shengyi_package"))
 
 % 定义路径
-outputPath = 'F:\test\output\';
-resultPath = 'F:\test\result\';
+outputPath = 'H:\xihoumen_data\wind\';
+resultPath = 'F:\test\result_wind\';
 
 % set whether to show the message
 showMessages = true;
@@ -22,7 +22,7 @@ showMessages = true;
 showProgressBar = false;
 
 % Get the file list of dat files
-fileList = dir([outputPath '*-UA1.txt']); % 仅列出其中一种txt文件来获取文件列表
+fileList = dir([outputPath '*-UANua1.txt']); % 仅列出其中一种txt文件来获取文件列表
 
 
 numIterations = length(fileList);
@@ -43,9 +43,9 @@ end
 
 
 % for loop
-% for k1 = 1
+% for k1 = 3615
 parfor k1 = 1:numIterations
-    baseName = fileList(k1).name(1:end-8); % 去掉 '-vibac2.txt' 后缀
+    baseName = fileList(k1).name(1:end-5); % 去掉 '-vibac2.txt' 后缀
 
     matFileName = [resultPath baseName '.mat'];
     if exist(matFileName, 'file')
@@ -74,12 +74,12 @@ parfor k1 = 1:numIterations
     startTime = datetime(dateStr, 'InputFormat', 'yyyy-MM-dd') + hours(str2double(timeStr));
     startTime.Format = 'yyyy-MM-dd HH:mm:ss.SSS';
     % read the txt file
-    dataUA1 = load([outputPath baseName '-UA1.txt']);
-    dataUA2 = load([outputPath baseName '-UA2.txt']);
-    dataUA3 = load([outputPath baseName '-UA3.txt']);
-    dataUA4 = load([outputPath baseName '-UA4.txt']);
-    dataUA5 = load([outputPath baseName '-UA5.txt']);
-    dataUA6 = load([outputPath baseName '-UA6.txt']);
+    dataUA1 = load([outputPath baseName '1.txt']);
+    dataUA2 = load([outputPath baseName '2.txt']);
+    dataUA3 = load([outputPath baseName '3.txt']);
+    dataUA4 = load([outputPath baseName '4.txt']);
+    dataUA5 = load([outputPath baseName '5.txt']);
+    dataUA6 = load([outputPath baseName '6.txt']);
 
     
 
@@ -88,11 +88,16 @@ parfor k1 = 1:numIterations
         if showMessages
             disp(['Data files for ' baseName ' are empty. Saving an empty table.']);
         end
-    
+        
+        try
         % Create an empty table with appropriate variable names
-        mergedData = table('Size', [0 7], ...
+        mergedData = table('Size', [0 19], ...
                            'VariableNames', {'Time', 'UA1_x', 'UA1_y', 'UA1_z', 'UA2_x', 'UA2_y', 'UA2_z', 'UA3_x', 'UA3_y', 'UA3_z', 'UA4_x', 'UA4_y', 'UA4_z', 'UA5_x', 'UA5_y', 'UA5_z', 'UA6_x', 'UA6_y', 'UA6_z'}, ...
-                            'VariableTypes', {'datetime', 'double', 'double', 'double', 'double', 'double', 'double', 'double', 'double', 'double', 'double','double', 'double', 'double','double', 'double', 'double','double', 'double', 'double'});
+                            'VariableTypes', {'datetime', 'double', 'double', 'double', 'double', 'double', 'double', 'double', 'double', 'double', 'double','double', 'double', 'double','double', 'double', 'double','double', 'double'});
+        catch ME
+               error('Error at iteration %d: %s', k1, ME.message);
+    
+        end
 
         % Save the empty table
         matFileName = [resultPath baseName '.mat'];
@@ -112,14 +117,18 @@ parfor k1 = 1:numIterations
             error(['Data files for ' baseName ' have different lengths.']);
     end
 
-    % mergedData
-    mergedData = table(timeStamps, dataUA1(:,2), dataUA1(:,3), dataUA1(:,4), dataUA2(:,2), dataUA2(:,3), dataUA2(:,4), dataUA3(:,2), dataUA3(:,3), dataUA3(:,4), dataUA4(:,2), dataUA4(:,3), dataUA4(:,4), dataUA5(:,2), dataUA5(:,3), dataUA5(:,4), dataUA6(:,2), dataUA6(:,3), dataUA6(:,4), ...
-        'VariableNames', {'Time', 'UA1_x', 'UA1_y', 'UA1_z', 'UA2_x', 'UA2_y', 'UA2_z', 'UA3_x', 'UA3_y', 'UA3_z', 'UA4_x', 'UA4_y', 'UA4_z', 'UA5_x', 'UA5_y', 'UA5_z', 'UA6_x', 'UA6_y', 'UA6_z'});
+    try
+        % mergedData
+        mergedData = table(timeStamps, dataUA1(:,2), dataUA1(:,3), dataUA1(:,4), dataUA2(:,2), dataUA2(:,3), dataUA2(:,4), dataUA3(:,2), dataUA3(:,3), dataUA3(:,4), dataUA4(:,2), dataUA4(:,3), dataUA4(:,4), dataUA5(:,2), dataUA5(:,3), dataUA5(:,4), dataUA6(:,2), dataUA6(:,3), dataUA6(:,4), ...
+            'VariableNames', {'Time', 'UA1_x', 'UA1_y', 'UA1_z', 'UA2_x', 'UA2_y', 'UA2_z', 'UA3_x', 'UA3_y', 'UA3_z', 'UA4_x', 'UA4_y', 'UA4_z', 'UA5_x', 'UA5_y', 'UA5_z', 'UA6_x', 'UA6_y', 'UA6_z'});
+    
+        % NOTE: x means the north direction, y means the up direction, z means the west direction
+        % save the mergedData
+    
+    catch ME
+           error('Error at iteration %d: %s', k1, ME.message);
 
-    % NOTE: x means the north direction, y means the up direction, z means the west direction
-    % save the mergedData
-
-
+    end
 
     if showMessages
         disp(['Saving data to: ' matFileName]);

@@ -3,10 +3,10 @@ addpath(genpath("C:\Users\shengyix\Documents\GitHub\Function_shengyi_package"))
 
 % datepath
 dataPath = "F:\test\result_wind";
-dataPath = "F:\test\result_wind";
+
 
 % load data
-month = 1;
+month = 12;
 year = 2013;
 
 tic

@@ -43,10 +43,10 @@ end
 
 
 % for loop
-% for k1 = 3615
+% for k1 = 1
 parfor k1 = 1:numIterations
     baseName = fileList(k1).name(1:end-5); % 去掉 '-vibac2.txt' 后缀
-
+    % baseName = '2013-09-29 09-UANua'
     matFileName = [resultPath baseName '.mat'];
     if exist(matFileName, 'file')
         % oldData = load(matFileName);
@@ -101,7 +101,7 @@ parfor k1 = 1:numIterations
 
         % Save the empty table
         matFileName = [resultPath baseName '.mat'];
-        parsave(matFileName, 'mergedData');
+        parsave(matFileName, mergedData);
         if showProgressBar
             updateParallel([], pwd);
         end

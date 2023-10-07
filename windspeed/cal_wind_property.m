@@ -9,9 +9,9 @@ function [result] = cal_wind_property(x,y,z,bridge_deg)
             fs = 32;
             %  create test data
             t = 0:1/fs:10*60-1/fs;
-            x = sqrt(20)*ones(1,length(t))+0.1*randn(1,length(t));
-            y = sqrt(20)*ones(1,length(t))+0.1*randn(1,length(t));
-            z = sqrt(2)*ones(1,length(t))+0.1*randn(1,length(t));
+            x = 10*ones(1,length(t))+0.1*randn(1,length(t));
+            y = 10*ones(1,length(t))+0.1*randn(1,length(t));
+            z = sqrt(0)*ones(1,length(t))+0.1*randn(1,length(t));
             
             bridge_deg = 45;
             result = cal_wind_property(x,y,z,bridge_deg);
@@ -86,6 +86,18 @@ function [result] = cal_wind_property(x,y,z,bridge_deg)
             disp('Tests completed.');
         end
 
+
+    % 检查x、y、z是否为空
+    if isempty(x) || isempty(y) || isempty(z)
+        result = struct('U', NaN, 'beta_deg_mean', NaN, 'alpha_deg_mean', NaN, ...
+                        'TI_u', NaN, 'TI_v', NaN, 'TI_w', NaN, 'L_u', NaN, ...
+                        'L_v', NaN, 'L_w', NaN, 'alpha_bridge_deg_mean', NaN, ...
+                        'u_bridge_mean', NaN, 'v_bridge_mean', NaN, 'w_bridge_mean', NaN, ...
+                        'x_mean', NaN, 'y_mean', NaN, 'z_mean', NaN, 'u_mean', NaN, ...
+                        'v_mean', NaN, 'w_mean', NaN);
+        return;
+    end
+    
     outliers_x = isoutlier(x);
     outliers_y = isoutlier(y);
     outliers_z = isoutlier(z);
@@ -98,12 +110,13 @@ function [result] = cal_wind_property(x,y,z,bridge_deg)
 
     x_mean = mean(x);         % 平均风速
     y_mean = mean(y);         % 平均风速
+    z_mean = mean(z);         % 平均风速
     
     U = sqrt(x_mean^2 + y_mean^2);  % 风速大小
 
-    x_mean = mean(x);         % 平均风速
-    y_mean = mean(y);         % 平均风速
-    z_mean = mean(z);         % 平均风速
+    % x_mean = mean(x);         % 平均风速
+    % y_mean = mean(y);         % 平均风速
+    % z_mean = mean(z);         % 平均风速
 
     beta_rad_mean = atan2(-y_mean, x_mean);  % 计算弧度值
     beta_deg_mean = rad2deg(beta_rad_mean);  % 将弧度值转换为度
@@ -113,9 +126,13 @@ function [result] = cal_wind_property(x,y,z,bridge_deg)
 
 
 
-    u = x .* cos(beta_rad_mean) + y .* sin(beta_rad_mean);
-    v = -x .* sin(beta_rad_mean) + y .* cos(beta_rad_mean);
+    u = x .* cos(beta_rad_mean) - y .* sin(beta_rad_mean);
+    v = x .* sin(beta_rad_mean) + y .* cos(beta_rad_mean);
     w = z;
+
+    u_mean = mean(u);         % 平均风速
+    v_mean = mean(v);         % 平均风速
+    w_mean = mean(w);         % 平均风速
 
     alpha_rad_mean = atan2(mean(w), U);  % 计算弧度值
     alpha_deg_mean = rad2deg(alpha_rad_mean);  % 将弧度值转换为度
@@ -180,6 +197,12 @@ function [result] = cal_wind_property(x,y,z,bridge_deg)
     result.u_bridge_mean = u_bridge_mean;
     result.v_bridge_mean = v_bridge_mean;
     result.w_bridge_mean = w_bridge_mean;
+    result.x_mean = x_mean;
+    result.y_mean = y_mean;
+    result.z_mean = z_mean;
+    result.u_mean = u_mean;
+    result.v_mean = v_mean;
+    result.w_mean = w_mean;
     
    
 end

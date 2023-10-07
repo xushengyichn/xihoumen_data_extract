@@ -9,11 +9,11 @@ function [result] = cal_wind_property(x,y,z,bridge_deg)
             fs = 32;
             %  create test data
             t = 0:1/fs:10*60-1/fs;
-            x = 10*ones(1,length(t));
-            y = 5*ones(1,length(t));
-            z = 20*ones(1,length(t));
+            x = sqrt(20)*ones(1,length(t))+0.1*randn(1,length(t));
+            y = sqrt(20)*ones(1,length(t))+0.1*randn(1,length(t));
+            z = sqrt(2)*ones(1,length(t))+0.1*randn(1,length(t));
             
-            bridge_deg = 40;
+            bridge_deg = 45;
             result = cal_wind_property(x,y,z,bridge_deg);
             U = result.U;
             beta_deg_mean = result.beta_deg_mean;
@@ -33,24 +33,24 @@ function [result] = cal_wind_property(x,y,z,bridge_deg)
             T = table(U, beta_deg_mean, alpha_deg_mean, TI_u, TI_v, TI_w, L_u, L_v, L_w, alpha_bridge_deg_mean, u_bridge_mean, v_bridge_mean, w_bridge_mean);
             disp(T);
             
-            % visualize the wind speed x is north, y is west, z is up
-            figure(1);
-            subplot(3,1,1);
-            plot(t,x);
-            xlabel('time (s)');
-            ylabel('wind speed (m/s)');
-            title('wind speed in x direction');
-            subplot(3,1,2);
-            plot(t,y);
-            xlabel('time (s)');
-            ylabel('wind speed (m/s)');
-            title('wind speed in y direction');
-            subplot(3,1,3);
-            plot(t,z);
-            xlabel('time (s)');
-            ylabel('wind speed (m/s)');
-            title('wind speed in z direction');
-            
+            % % visualize the wind speed x is north, y is west, z is up
+            % figure(1);
+            % subplot(3,1,1);
+            % plot(t,x);
+            % xlabel('time (s)');
+            % ylabel('wind speed (m/s)');
+            % title('wind speed in x direction');
+            % subplot(3,1,2);
+            % plot(t,y);
+            % xlabel('time (s)');
+            % ylabel('wind speed (m/s)');
+            % title('wind speed in y direction');
+            % subplot(3,1,3);
+            % plot(t,z);
+            % xlabel('time (s)');
+            % ylabel('wind speed (m/s)');
+            % title('wind speed in z direction');
+            % 
 
             figure(2);
 
@@ -60,9 +60,16 @@ function [result] = cal_wind_property(x,y,z,bridge_deg)
             
             % 绘制表示桥方向的线
             bridge_length = 20; % 你可以根据需要设置桥的长度
-            bridge_x = [0, bridge_length * cosd(bridge_deg)];
-            bridge_y = [0, bridge_length * sind(bridge_deg)];
+            half_length = bridge_length / 2; % 桥梁长度的一半
+            
+            % 计算桥的两个端点
+            bridge_x = [half_length * cosd(bridge_deg), -half_length * cosd(bridge_deg)];
+            bridge_y = [half_length * sind(-bridge_deg), -half_length * sind(-bridge_deg)];
+
+            
+            % 绘制桥梁
             plot3(bridge_x, bridge_y, [0, 0], 'r', 'LineWidth', 2);
+
             
             xlabel('X (North)');
             ylabel('Y (West)');
@@ -71,8 +78,11 @@ function [result] = cal_wind_property(x,y,z,bridge_deg)
             legend('Wind Direction', 'Bridge Direction');
             axis equal;
             grid on;
+            xlim([-10, 10]);
+            ylim([-10, 10]);
+            zlim([-10, 10]);
             
-    
+            view(-90, 90);
             disp('Tests completed.');
         end
 

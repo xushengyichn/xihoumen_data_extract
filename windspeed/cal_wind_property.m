@@ -11,19 +11,19 @@ function [result] = cal_wind_property(x,y,z,bridge_deg)
             t = 0:1/fs:10*60-1/fs;
             x = 10*ones(1,length(t))+0.1*randn(1,length(t));
             y = 10*ones(1,length(t))+0.1*randn(1,length(t));
-            z = sqrt(0)*ones(1,length(t))+0.1*randn(1,length(t));
+            z = sqrt(10)*ones(1,length(t))+0.1*randn(1,length(t));
             
             bridge_deg = 45;
             result = cal_wind_property(x,y,z,bridge_deg);
             U = result.U;
             beta_deg_mean = result.beta_deg_mean;
             alpha_deg_mean = result.alpha_deg_mean;
-            TI_u = result.TI_u;
-            TI_v = result.TI_v;
-            TI_w = result.TI_w;
-            L_u = result.L_u;
-            L_v = result.L_v;
-            L_w = result.L_w;
+            % TI_u = result.TI_u;
+            % TI_v = result.TI_v;
+            % TI_w = result.TI_w;
+            % L_u = result.L_u;
+            % L_v = result.L_v;
+            % L_w = result.L_w;
             alpha_bridge_deg_mean = result.alpha_bridge_deg_mean;
             u_bridge_mean = result.u_bridge_mean;
             v_bridge_mean = result.v_bridge_mean;
@@ -87,16 +87,37 @@ function [result] = cal_wind_property(x,y,z,bridge_deg)
         end
 
 
-    % 检查x、y、z是否为空
-    if isempty(x) || isempty(y) || isempty(z)
-        result = struct('U', NaN, 'beta_deg_mean', NaN, 'alpha_deg_mean', NaN, ...
+    % 检查x、y、z是否为空或者全为0
+    if isempty(x) || isempty(y) || isempty(z) || (all(x == 0) && all(y == 0) && all(z == 0))
+        table_temp = struct('U', NaN, 'beta_deg_mean', NaN, 'alpha_deg_mean', NaN, ...
                         'TI_u', NaN, 'TI_v', NaN, 'TI_w', NaN, 'L_u', NaN, ...
                         'L_v', NaN, 'L_w', NaN, 'alpha_bridge_deg_mean', NaN, ...
                         'u_bridge_mean', NaN, 'v_bridge_mean', NaN, 'w_bridge_mean', NaN, ...
                         'x_mean', NaN, 'y_mean', NaN, 'z_mean', NaN, 'u_mean', NaN, ...
                         'v_mean', NaN, 'w_mean', NaN);
+
+            result.U = table_temp.U;
+            result.beta_deg_mean = table_temp.beta_deg_mean;
+            result.alpha_deg_mean = table_temp.alpha_deg_mean;
+            result.TI_u = table_temp.TI_u;
+            result.TI_v = table_temp.TI_v;
+            result.TI_w = table_temp.TI_w;
+            % result.L_u =table_temp.L_u;
+            % result.L_v = table_temp.L_v;
+            % result.L_w = table_temp.L_w;
+            result.alpha_bridge_deg_mean = table_temp.alpha_bridge_deg_mean;
+            result.u_bridge_mean = table_temp.u_bridge_mean;
+            result.v_bridge_mean = table_temp.v_bridge_mean;
+            result.w_bridge_mean = table_temp.w_bridge_mean;
+            result.x_mean = table_temp.x_mean;
+            result.y_mean = table_temp.y_mean;
+            result.z_mean = table_temp.z_mean;
+            result.u_mean = table_temp.u_mean;
+            result.v_mean = table_temp.v_mean;
+            result.w_mean = table_temp.w_mean;
         return;
     end
+
     
     outliers_x = isoutlier(x);
     outliers_y = isoutlier(y);
@@ -139,35 +160,35 @@ function [result] = cal_wind_property(x,y,z,bridge_deg)
 
     u_avg = mean(u);         % 平均风速
     sigma_u = std(u);        % u方向的风速标准偏差
-    TI_u = sigma_u / u_avg;  % 湍流强度
+    TI_u = sigma_u / U;  % 湍流强度
 
     v_avg = mean(v);         % 平均风速
     sigma_v = std(v);        % v方向的风速标准偏差
-    TI_v = sigma_v / v_avg;  % 湍流强度
+    TI_v = sigma_v / U;  % 湍流强度
 
     w_avg = mean(w);         % 平均风速
     sigma_w = std(w);        % w方向的风速标准偏差
-    TI_w = sigma_w / w_avg;  % 湍流强度
+    TI_w = sigma_w / U;  % 湍流强度
 
 
-    % 计算自相关函数
-    % 只考虑正的滞后值，并归一化自相关函数
-    [R_u, lag] = xcorr(u, 'biased');
-    R_u = R_u(lag >= 0);
-    R_u = R_u / R_u(1);
-    [R_v, lag] = xcorr(v, 'biased');
-    R_v = R_v(lag >= 0);
-    R_v = R_v / R_v(1);
-    [R_w, lag] = xcorr(w, 'biased');
-    R_w = R_w(lag >= 0);
-    R_w = R_w / R_w(1);
-
-    
-
-    % 使用梯形法进行数值积分
-    L_u = trapz(R_u);
-    L_v = trapz(R_v);
-    L_w = trapz(R_w);
+    % % 计算自相关函数
+    % % 只考虑正的滞后值，并归一化自相关函数
+    % [R_u, lag] = xcorr(u, 'biased');
+    % R_u = R_u(lag >= 0);
+    % R_u = R_u / R_u(1);
+    % [R_v, lag] = xcorr(v, 'biased');
+    % R_v = R_v(lag >= 0);
+    % R_v = R_v / R_v(1);
+    % [R_w, lag] = xcorr(w, 'biased');
+    % R_w = R_w(lag >= 0);
+    % R_w = R_w / R_w(1);
+    % 
+    % 
+    % 
+    % % 使用梯形法进行数值积分
+    % L_u = trapz(R_u);
+    % L_v = trapz(R_v);
+    % L_w = trapz(R_w);
 
 
     % 假设x和y是您的风速数据向量
@@ -190,9 +211,9 @@ function [result] = cal_wind_property(x,y,z,bridge_deg)
     result.TI_u = TI_u;
     result.TI_v = TI_v;
     result.TI_w = TI_w;
-    result.L_u = L_u;
-    result.L_v = L_v;
-    result.L_w = L_w;
+    % result.L_u = L_u;
+    % result.L_v = L_v;
+    % result.L_w = L_w;
     result.alpha_bridge_deg_mean = alpha_bridge_deg_mean;
     result.u_bridge_mean = u_bridge_mean;
     result.v_bridge_mean = v_bridge_mean;

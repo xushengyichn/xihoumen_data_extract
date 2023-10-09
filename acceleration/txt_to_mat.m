@@ -43,8 +43,8 @@ end
 
 
 % for loop
-% for k1 = 1
-for k1 = 1:numIterations
+for k1 = 314
+% for k1 = 1:numIterations
     baseName = fileList(k1).name(1:end-11); % 去掉 '-vibac2.txt' 后缀
     % baseName = '2013-09-20 03'
     dateStr = baseName(1:10);
@@ -90,6 +90,25 @@ for k1 = 1:numIterations
                        dataAc4(:,2), dataAc4(:,3), dataAc4(:,4), ...
                        'VariableNames', {'Time', 'AC2_1', 'AC2_2', 'AC2_3', 'AC3_1', 'AC3_2', 'AC3_3', 'AC4_1', 'AC4_2', 'AC4_3'});
 
+    % 检查重复时间戳
+            % Find the unique timestamps and their first occurrence
+        [~, ~, ic] = unique(mergedData.Time, 'stable');
+        
+        % Identify the duplicated timestamps
+        counts = accumarray(ic, 1);
+        duplicatedIndices = find(counts > 1);
+        duplicatedTimestamps = find(ismember(ic, duplicatedIndices));
+
+        % Loop through the duplicated timestamps
+        rowsToDelete = []; % Store the rows to be deleted
+        for idx = duplicatedTimestamps'
+            if all(mergedData{idx, 2:end} == 0) % if all other columns except timestamp are zeros
+                rowsToDelete = [rowsToDelete; idx];
+            end
+        end
+        
+        % Remove the rows
+        mergedData(rowsToDelete, :) = [];
     % save the mergedData
 
     matFileName = [resultPath baseName '.mat'];

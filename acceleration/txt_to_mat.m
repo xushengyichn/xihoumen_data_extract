@@ -43,7 +43,7 @@ end
 
 
 % for loop
-for k1 = 314
+for k1 = 3301
 % for k1 = 1:numIterations
     baseName = fileList(k1).name(1:end-11); % 去掉 '-vibac2.txt' 后缀
     % baseName = '2013-09-20 03'
@@ -106,9 +106,22 @@ for k1 = 314
                 rowsToDelete = [rowsToDelete; idx];
             end
         end
-        
-        % Remove the rows
+       % Remove the rows
         mergedData(rowsToDelete, :) = [];
+        if isempty(rowsToDelete)
+            % Determine which of the duplicated rows to adjust (the first
+            % half)若每一行都有数据，可能是前一半的时间戳需要提前一秒
+            timestampsToAdjust = [];
+            disp("重复时间戳，前一半往前移动1秒")
+            for dupIndex = duplicatedIndices'
+                rows = find(ic == dupIndex);
+                halfPoint = floor(length(rows) / 2);
+                timestampsToAdjust = [timestampsToAdjust; rows(1:halfPoint)];
+            end
+            mergedData.Time(timestampsToAdjust) = mergedData.Time(timestampsToAdjust) - seconds(1);
+        end
+        
+
     % save the mergedData
 
     matFileName = [resultPath baseName '.mat'];

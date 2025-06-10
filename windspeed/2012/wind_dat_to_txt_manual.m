@@ -1,0 +1,180 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%Author: xushengyichn 54436848+xushengyichn@users.noreply.github.com
+%Date: 2023-10-04 22:13:37
+%LastEditors: ShengyiXu xushengyichn@outlook.com
+%LastEditTime: 2023-10-05 12:44:49
+%FilePath: \Exercises-for-Techniques-for-estimation-in-dynamics-systemsf:\git\xihoumen_data_extract\windspeed\wind_dat_to_txt.m
+%Description: 将dat文件转换为txt文件
+%
+%Copyright (c) 2023 by ${git_name_email}, All Rights Reserved. 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+clc;clear; close all
+addpath(genpath("D:\Github\Function_shengyi_package"))
+
+% 定义路径
+
+
+dataPath = 'H:\2011-04-01~2011-12-31\allUAN\';
+exePath = 'H:\2011-04-01~2011-12-31\allUAN\';
+outputPath = 'D:\xihoumen_data\2011\wind\';
+
+% set if showing the message
+showMessages = true;
+
+% whether to show parfor progress bar
+showProgressBar = false;
+
+% Get the file list of dat files
+fileList = dir([dataPath '*-UAN.dat']);
+
+
+numIterations = length(fileList);
+
+
+% Get the file list of dat files
+fileList_exist = dir([outputPath '*-UA1.txt']); % 仅列出其中一种txt文件来获取文件列表
+
+% 提取两个文件列表中的文件名
+names_all = {fileList.name};
+names_exist = {fileList_exist.name};
+
+% 删除后缀，只保留前面的部分
+names_all_base = cellfun(@(x) x(1:end-4), names_all, 'UniformOutput', false);
+names_exist_base = cellfun(@(x) x(1:17), names_exist, 'UniformOutput', false); % 从名字中提取前16个字符
+
+% 使用setdiff找出在names_all_base中但不在names_exist_base中的文件名前缀
+missing_files_base = setdiff(names_all_base, names_exist_base);
+
+
+
+% for loop
+for  k1 = 1
+% for  k1 = 1:numIterations
+    % Get the file name
+    datFile = [dataPath fileList(k1).name];
+
+    % Construct the output filename
+    % remove extension
+    % [~,baseName,~] = fileparts(datFile);
+    baseName='2011-04-01 00-UAN';
+    txtUA1File = [outputPath baseName '-UA1.txt'];
+    txtUA2File = [outputPath baseName '-UA2.txt'];
+    txtUA3File = [outputPath baseName '-UA3.txt'];
+    txtUA4File = [outputPath baseName '-UA4.txt'];
+    txtUA5File = [outputPath baseName '-UA5.txt'];
+    txtUA6File = [outputPath baseName '-UA6.txt'];
+
+    % Construct the command
+    command1 = [exePath 'uan2txtua1.exe "' datFile '" "' txtUA1File '"'];
+    command2 = [exePath 'uan2txtua2.exe "' datFile '" "' txtUA2File '"'];
+    command3 = [exePath 'uan2txtua3.exe "' datFile '" "' txtUA3File '"'];
+    command4 = [exePath 'uan2txtua4.exe "' datFile '" "' txtUA4File '"'];
+    command5 = [exePath 'uan2txtua5.exe "' datFile '" "' txtUA5File '"'];
+    command6 = [exePath 'uan2txtua6.exe "' datFile '" "' txtUA6File '"'];
+    
+    % Run the command
+    % 如果文件不存在则运行命令
+    fileInfo = dir(txtUA1File);
+    if isempty(fileInfo) || fileInfo.bytes < 5529600
+        if showMessages
+            disp(['Executing command for: ' txtUA1File]);
+        end
+        system(command1);
+
+    else
+        if showMessages
+            % disp(['Skipping existing file: ' txtUA1File]);
+        end
+    end
+
+    fileInfo = dir(txtUA2File);
+    if isempty(fileInfo) || fileInfo.bytes < 5529600
+        if showMessages
+            disp(['Executing command for: ' txtUA2File]);
+        end
+        system(command2);
+
+    else
+        if showMessages
+            % disp(['Skipping existing file: ' txtUA2File]);
+        end
+    end
+    
+    fileInfo = dir(txtUA3File);
+    if isempty(fileInfo) || fileInfo.bytes < 5529600
+        if showMessages
+            disp(['Executing command for: ' txtUA3File]);
+        end
+        system(command3);
+
+    else
+        if showMessages
+            % disp(['Skipping existing file: ' txtUA3File]);
+        end
+    end
+    
+    fileInfo = dir(txtUA4File);
+    if isempty(fileInfo) || fileInfo.bytes < 5529600
+        if showMessages
+            disp(['Executing command for: ' txtUA4File]);
+        end
+        system(command4);
+
+    else
+        if showMessages
+            % disp(['Skipping existing file: ' txtUA4File]);
+        end
+    end
+
+    fileInfo = dir(txtUA5File);
+    if isempty(fileInfo) || fileInfo.bytes < 5529600
+        if showMessages
+            disp(['Executing command for: ' txtUA5File]);
+        end
+        system(command5);
+
+    else
+        if showMessages
+            % disp(['Skipping existing file: ' txtUA5File]);
+        end
+    end
+
+    fileInfo = dir(txtUA6File);
+    if isempty(fileInfo) || fileInfo.bytes < 5529600
+        if showMessages
+            disp(['Executing command for: ' txtUA6File]);
+        end
+        system(command6);
+
+    else
+        if showMessages
+            % disp(['Skipping existing file: ' txtUA6File]);
+        end
+    end
+
+%     % After running the commands for each file, check their sizes:
+% filesToCheck = {txtUA1File, txtUA2File, txtUA3File, txtUA4File, txtUA5File, txtUA6File};
+% for idx = 1:length(filesToCheck)
+%     currentFile = filesToCheck{idx};
+%     while true
+%         fileInfo = dir(currentFile);
+%         if ~isempty(fileInfo) && fileInfo.bytes == 5529600
+%             break; % Exit the while loop if the condition is met
+%         else
+%             pause(5); % Wait for 5 seconds before checking again
+%             disp('pause for 5 seconds')
+%         end
+%     end
+% end
+
+    if showProgressBar
+        % USE THIS FUNCTION AND NOT THE STEP() METHOD OF THE OBJECT!!!
+        updateParallel([], pwd);
+    end
+end
+
+
+
+if showProgressBar
+    b.release();
+end
